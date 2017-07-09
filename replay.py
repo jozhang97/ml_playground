@@ -8,12 +8,12 @@ class Replay():
         self.BATCH_SIZE = BATCH_SIZE
 
     def add_transition(self, transition):
-        if len(self.replay) > self.REPLAY_MEMORY_SIZE:
+        if len(self.replay) >= self.REPLAY_MEMORY_SIZE:
             self.replay.pop()
         self.replay.add(transition)
 
     def pick_random_transition(self):
-        random.sample(self.replay, self.BATCH_SIZE)
+        return random.sample(self.replay, self.BATCH_SIZE)
 
     def __str__(self):
         return str([str(r) for r in self.replay])
