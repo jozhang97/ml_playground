@@ -1,4 +1,5 @@
 import gym
+import tensorflow as tf
 from model import Model
 from simple_rl_helper import preprocess
 from replay import Replay
@@ -19,8 +20,10 @@ env = gym.make(game_name)
 curr_state = preprocess(env.reset())
 
 # initalize replay memory and action-value function
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
 replay = Replay(REPLAY_MEMORY_SIZE, BATCH_SIZE)
-model = Model(DISCOUNT_FACTOR, INITIAL_LEARNING_RATE)
+model = Model(sess, DISCOUNT_FACTOR, INITIAL_LEARNING_RATE)
 action_space = env.action_space
 
 for n in range(NUM_ITER):
