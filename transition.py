@@ -26,5 +26,17 @@ class Transition:
             return False
         return True
 
+    def get_curr_state(self):
+        return self.s_t
+
+    def get_action(self):
+        return self.a_t
+
+    def get_reward(self):
+        return self.r_t
+
+    def get_next_state(self):
+        return self.s_t_1
+
     def __str__(self):
         return "Current State: " + str(self.s_t) + "\nAction: " + str(self.a_t) + "\nReward: " + str(self.r_t) + "\n Next State: " + str(self.s_t_1)
