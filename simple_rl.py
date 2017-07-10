@@ -22,19 +22,22 @@ curr_state = preprocess(env.reset())
 # initalize replay memory and action-value function
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
-replay = Replay(REPLAY_MEMORY_SIZE, BATCH_SIZE)
-model = Model(sess, DISCOUNT_FACTOR, INITIAL_LEARNING_RATE)
 action_space = env.action_space
+observation_space = env.observation_space
+replay = Replay(REPLAY_MEMORY_SIZE, BATCH_SIZE)
+model = Model(sess, action_space, observation_space, DISCOUNT_FACTOR, INITIAL_LEARNING_RATE)
 
 for n in range(NUM_ITER):
     env.render()
 
-    action = model.select_action(curr_state, action_space, RANDOM_ACTION_PROBABILITY)
+    action = model.select_action(curr_state, RANDOM_ACTION_PROBABILITY)
+
+    print(action)
 
     next_pstate, reward, done, info = env.step(action)
     next_state = preprocess(next_pstate)
 
-    replay.add_transition(Transition(curr_state, action, reward, next_state))
+    replay.add_transition(Transition(curr_state, action, reward, next_state, done))
     batch_transitions = replay.pick_random_transition()
 
     model.update(batch_transitions)

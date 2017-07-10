@@ -1,11 +1,12 @@
 import numpy as np
 
 class Transition:
-    def __init__(self, s_t, a_t, r_t, s_t_1):
+    def __init__(self, s_t, a_t, r_t, s_t_1, is_terminal_next_state=False):
         self.s_t = s_t
         self.a_t = a_t
         self.r_t = r_t
         self.s_t_1 = s_t_1
+        self.is_terminal_next_state = is_terminal_next_state
 
     def __hash__(self):
         self.s_t.flags.writeable = False
@@ -37,6 +38,9 @@ class Transition:
 
     def get_next_state(self):
         return self.s_t_1
+
+    def get_is_terminal_next_state(self):
+        return self.is_terminal_next_state
 
     def __str__(self):
         return "Current State: " + str(self.s_t) + "\nAction: " + str(self.a_t) + "\nReward: " + str(self.r_t) + "\n Next State: " + str(self.s_t_1)
