@@ -1,26 +1,53 @@
 import numpy as np
 import tensorflow as tf
 import random as random
+import time
 # from transition import Transition
+from transition import merge_transitions
 
 class Model:
-    def __init__(self, sess, action_space, observation_space, DISCOUNT_FACTOR=0.9, INITIAL_LEARNING_RATE = 0.9):
-        input_size = 120000
+    # EXTERNALLY,
+    # evaluate by running sess.run(model.q, feed_dict={states: states, actions: actions})
+    # train by model.train_step
+    # select action by by model.select_action_step
+    def __init__(self, sess, action_space, observation_space, initial_state, DISCOUNT_FACTOR=0.9, INITIAL_LEARNING_RATE = 0.9):
+        input_size = 28190
         output_size = 1
-        self.W = tf.Variable(tf.truncated_normal([output_size, input_size], 0.1))
+        self.W = tf.Variable(tf.truncated_normal([input_size, output_size], 0.1))
         self.W_target = self.W
         self.DISCOUNT_FACTOR = DISCOUNT_FACTOR
         self.LEARNING_RATE = INITIAL_LEARNING_RATE
         self.sess = sess
         self.action_space = action_space
         self.observation_space = observation_space
+        self.state_shape = initial_state.shape
+        self.q = self.evaluate()
+        self.train_step = self.update()
+        # self.select_action_step = self.select_action()
 
-    def evaluate(self, state, action):
+    def evaluate_single(self, state, action):
+        # TODO Too slow
+        # TODO Need to one hot action and incorporate
         # evaluates the value of the state action pair Q(s,a; theta)
         # q = tf.matmul(self.W, state.flatten().astype(np.float32).reshape([120000, 1]))
-        q = np.dot(self.W, state.flatten().astype(np.float32).reshape([120000, 1]))
+        state = tf.nn.max_pool(state, ksize=[3,3,1,1], strides=[2,2,1,1], padding='VALID')
+        x,y,z = state.shape
+        q = np.dot(self.W, state.flatten().astype(np.float32).reshape([x*y*z, 1]))
         return q[0][0]
 
+    def evaluate(self):
+        # Lessons learned here: get_shape() must be followed by .as_list() to look at the dimensions
+        # Must apply tf.one_hot on a vector, thus its shape must be (None,)
+        # Using concat instead of stack to combine half-feature vectors
+        states = tf.placeholder(dtype=tf.float32, shape=(None, self.state_shape[0], self.state_shape[1], self.state_shape[2]))
+        actions = tf.placeholder(dtype=tf.int32, shape=(None,))
+        states = tf.nn.max_pool(states, ksize=[1,7,7,1], strides=[1,2,2,1], padding='VALID')
+        n, x, y, c = states.get_shape().as_list()
+        states_reshaped = tf.reshape(states, [-1, x*y*c])
+        actions_one_hotted = tf.one_hot(actions, depth=self.action_space.n, dtype=tf.float32, axis=-1)
+        feature_vector = tf.concat([states_reshaped, actions_one_hotted], 1)
+        q = tf.matmul(feature_vector, self.W)
+        return tf.nn.softmax(q)
 
     def update(self, batch_transitions):
         # batch gradient descent
