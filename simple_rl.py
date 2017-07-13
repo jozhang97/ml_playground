@@ -25,14 +25,14 @@ sess.run(tf.global_variables_initializer())
 action_space = env.action_space
 observation_space = env.observation_space
 replay = Replay(REPLAY_MEMORY_SIZE, BATCH_SIZE)
-model = Model(sess, action_space, observation_space, DISCOUNT_FACTOR, INITIAL_LEARNING_RATE)
+model = Model(sess, action_space, observation_space, curr_state, DISCOUNT_FACTOR, INITIAL_LEARNING_RATE)
 
 for n in range(NUM_ITER):
     env.render()
 
-    action = model.select_action(curr_state, RANDOM_ACTION_PROBABILITY)
 
-    print(action)
+    # action = model.select_action(curr_state, RANDOM_ACTION_PROBABILITY)
+    action = sess.run(model.select_action_step, feed_dict={state: tf.cast(curr_state, tf.float32), RANDOM_ACTION_PROBABILITY: RANDOM_ACTION_PROBABILITY})
 
     next_pstate, reward, done, info = env.step(action)
     next_state = preprocess(next_pstate)
@@ -41,6 +41,7 @@ for n in range(NUM_ITER):
     batch_transitions = replay.pick_random_transition()
 
     model.update(batch_transitions)
+    # sess.run(model.train_step, feed_dict={batch_transitions: batch_transitions})
 
     if n != 0 and n % TARGET_NETWORK_UPDATE_ITER == 0:
         model.sync_target()

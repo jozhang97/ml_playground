@@ -7,7 +7,7 @@ from transition import merge_transitions
 
 class Model:
     # EXTERNALLY,
-    # evaluate by running sess.run(model.q, feed_dict={states: states, actions: actions})
+    # evaluate by running sess.run(model.q, feed_dict={states: states, actions: actions})  ya this won't work
     # train by model.train_step
     # select action by by model.select_action_step
     def __init__(self, sess, action_space, observation_space, initial_state, DISCOUNT_FACTOR=0.9, INITIAL_LEARNING_RATE = 0.9):
@@ -21,26 +21,33 @@ class Model:
         self.action_space = action_space
         self.observation_space = observation_space
         self.state_shape = initial_state.shape
-        self.q = self.evaluate()
-        self.train_step = self.update()
-        # self.select_action_step = self.select_action()
+        #self.train_step = self.update()
+        self.select_action_step = self.select_action()
 
-    def evaluate_single(self, state, action):
-        # TODO Too slow
-        # TODO Need to one hot action and incorporate
-        # evaluates the value of the state action pair Q(s,a; theta)
-        # q = tf.matmul(self.W, state.flatten().astype(np.float32).reshape([120000, 1]))
-        state = tf.nn.max_pool(state, ksize=[3,3,1,1], strides=[2,2,1,1], padding='VALID')
-        x,y,z = state.shape
-        q = np.dot(self.W, state.flatten().astype(np.float32).reshape([x*y*z, 1]))
-        return q[0][0]
+    def select_action(self):
+        # picks an action to take
+        RANDOM_ACTION_PROBABILITY = tf.placeholder(dtype=tf.float32)
+        tf.cond(
+            tf.less(random.random(), RANDOM_ACTION_PROBABILITY),
+                self.action_space.sample,
+                self.select_action_greedy)
+        # if random.random() < RANDOM_ACTION_PROBABILITY:
+        #     return self.action_space.sample()
 
-    def evaluate(self):
+    def select_action_greedy(self):
+        state = tf.placeholder(dtype=tf.float32, shape=(self.state_shape[0], self.state_shape[1], self.state_shape[2]))
+        states = [tf.Variable(tf.zeros(self.state_shape, tf.float32)) for _ in range(self.action_space.n)]
+        states = [var.assign(state) for var in states]
+        actions = [i for i in range(self.action_space.n)] # not sure about this
+        q_list = self.evaluate(states, actions)
+        return tf.cast(tf.argmax(q_list), tf.int32)
+
+    def evaluate(self, states, actions):
         # Lessons learned here: get_shape() must be followed by .as_list() to look at the dimensions
         # Must apply tf.one_hot on a vector, thus its shape must be (None,)
         # Using concat instead of stack to combine half-feature vectors
-        states = tf.placeholder(dtype=tf.float32, shape=(None, self.state_shape[0], self.state_shape[1], self.state_shape[2]))
-        actions = tf.placeholder(dtype=tf.int32, shape=(None,))
+        ## states = tf.placeholder(dtype=tf.float32, shape=(None, self.state_shape[0], self.state_shape[1], self.state_shape[2]))
+        ## actions = tf.placeholder(dtype=tf.int32, shape=(None,))
         states = tf.nn.max_pool(states, ksize=[1,7,7,1], strides=[1,2,2,1], padding='VALID')
         n, x, y, c = states.get_shape().as_list()
         states_reshaped = tf.reshape(states, [-1, x*y*c])
@@ -86,18 +93,6 @@ class Model:
         self.W = temp
         return ret
 
-
-    def select_action(self, state, RANDOM_ACTION_PROBABILITY):
-        # picks an action to take
-        if random.random() < RANDOM_ACTION_PROBABILITY:
-            return self.action_space.sample()
-        action_optimal, q_max = 0, 0.0
-        for action_index in range(self.action_space.n): # not sure about this
-            q = self.evaluate(state, self.action_space.from_jsonable(action_index))
-            if q > q_max:
-                action_optimal, q_max = action_index, q
-            # action_optimal, q_max = tf.cond(q > q_max, lambda: (action_index, q), lambda: (action_optimal, q_max))
-        return action_optimal
 
 
     def sync_target(self):
