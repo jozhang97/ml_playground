@@ -1,4 +1,5 @@
 from transition import merge_transitions
+import numpy as np
 
 def preprocess(image):
     # TODO: Implement this
@@ -13,3 +14,16 @@ def convert_transitions_to_map(transitions, model):
         model.next_states: next_states,
         model.is_terminal_next_states: is_terminal_next_states
     }
+
+def sync_target_model(model, target_model):
+    target_model.W = model.W
+    # TODO SYNC THE CONV TOO
+
+
+def zero_rewards_in_terminal_states(rewards, is_terminals):
+    # zero out the elements of the rewards vector where it is terminal state
+    def zero_terminal(reward, is_terminal):
+        if is_terminal:
+            return 0
+        return reward
+    return np.vectorize(zero_terminal)(rewards, is_terminals)
