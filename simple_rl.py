@@ -1,13 +1,13 @@
 import gym
 import tensorflow as tf
 from model import Model
-from simple_rl_helper import preprocess, convert_transitions_to_map, sync_target_model, zero_maxQ_in_terminal_states
+from simple_rl_helper import preprocess, convert_transitions_to_map, sync_target_model, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph
 from replay import Replay
 from transition import Transition
 import random
 
 # HYPERPARAMETERS
-RANDOM_ACTION_PROBABILITY = 0.001  # aka epsilon
+RANDOM_ACTION_PROBABILITY = 0.1  # aka epsilon
 DISCOUNT_FACTOR = 0.9  # gamma
 REPLAY_MEMORY_SIZE = 100
 BATCH_SIZE = 64
@@ -16,7 +16,7 @@ INITIAL_LEARNING_RATE = 0.9
 TARGET_NETWORK_UPDATE_ITER = 50
 
 # ENVIRONMENT
-game_name = "Gopher-v0"
+game_name = "Breakout-v0"
 env = gym.make(game_name)
 curr_state = preprocess(env.reset())
 action_space = env.action_space
@@ -31,11 +31,15 @@ replay = Replay(REPLAY_MEMORY_SIZE, BATCH_SIZE)
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
-for n in range(NUM_ITER):
-    env.render()
+saver = tf.train.Saver() # TODO Implement this
 
+trainables = tf.trainable_variables()
+target_sync_ops = updateTargetGraph(trainables)
+
+for n in range(NUM_ITER):
     if n % TARGET_NETWORK_UPDATE_ITER == 0:
-        sync_target_model(model, target_model)  # TODO THIS IS NOT DONE CORRECTLY
+        updateTarget(target_sync_ops, sess)
+        env.render()
 
     action = action_space.sample()
     if random.random() > RANDOM_ACTION_PROBABILITY:
@@ -55,7 +59,6 @@ for n in range(NUM_ITER):
     train_step_map[model.targetQ] = targetQ
     sess.run(model.train_step, feed_dict=train_step_map)
 
+    curr_state = next_state
     if done:
         curr_state = preprocess(env.reset())
-
-    curr_state = next_state

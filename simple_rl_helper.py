@@ -27,3 +27,17 @@ def zero_maxQ_in_terminal_states(maxQ, is_terminals):
             return 0
         return reward
     return np.vectorize(zero_terminal)(maxQ, is_terminals)
+
+
+# TODO UNDERSTAND BELOW
+def updateTargetGraph(tfVars,tau=0.001):
+    total_vars = len(tfVars)
+    op_holder = []
+    for idx,var in enumerate(tfVars[0:total_vars//2]):
+        op_holder.append(tfVars[idx+total_vars//2].assign((var.value()*tau) + ((1-tau)*tfVars[idx+total_vars//2].value())))
+    return op_holder
+
+# TODO UNDERSTAND BELOW
+def updateTarget(op_holder,sess):
+    for op in op_holder:
+        sess.run(op)

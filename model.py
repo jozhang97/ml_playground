@@ -7,7 +7,7 @@ import tensorflow as tf
 class Model:
     def __init__(self, action_space, observation_space, DISCOUNT_FACTOR=0.9, INITIAL_LEARNING_RATE = 0.9):
         self.num_actions = action_space.n
-        self.input_size = 28182
+        self.input_size = 23562
         self.output_size = self.num_actions
         self.W = tf.Variable(tf.truncated_normal([self.input_size, self.output_size], 0.1))
         self.DISCOUNT_FACTOR = DISCOUNT_FACTOR
@@ -21,7 +21,7 @@ class Model:
         self.states_reshaped = tf.reshape(self.max_pooled_states, [-1, x*y*c])
         self.Q_list = tf.nn.softmax(tf.matmul(self.states_reshaped, self.W))
         self.maxQ = tf.reduce_max(self.Q_list, axis=1)  # how did they pick best action as opposed to max Q ... idk if right axis
-        self.predictions = tf.cast(tf.argmax(self.Q_list), tf.int32)
+        self.predictions = tf.cast(tf.argmax(self.Q_list, axis=1), tf.int32)
 
         self.actions = tf.placeholder(dtype=tf.int32, shape=(None,))
         self.rewards = tf.placeholder(dtype=tf.int32, shape=(None,))
