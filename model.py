@@ -56,11 +56,23 @@ class Model:
         q = tf.matmul(feature_vector, self.W)
         return tf.nn.softmax(q)
 
-    def update(self, batch_transitions):
+    def update(self):
         # batch gradient descent
         # batch_transitions is a set of Transition objects
-        for t in batch_transitions:
-            self.update_single(t)
+        batch_transitions = tf.Variable()
+        states, actions, rewards, next_states, is_terminal_next_states = merge_transitions(batch_transitions)
+        loss = self.calculate_loss(states, actions, rewards, next_states, is_terminal_next_states)
+        train_step = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE).minimize(loss)
+        return train_step
+
+        #for t in batch_transitions:
+         #   self.update_single(t)
+
+        return optimizer.minimize(loss)
+
+    def calculate_loss(self, curr_states, actions, rewards, next_states, is_terminal_next_states):
+        return;
+
 
 
     def update_single(self, t):
@@ -71,14 +83,14 @@ class Model:
         next_state = tf.placeholder(tf.float32, self.observation_space.shape)
         is_terminal_next_state = tf.placeholder(tf.bool)
 
-        loss = self.calculate_loss(curr_state, action, reward, next_state, is_terminal_next_state)
+        loss = self.calculate_loss_single(curr_state, action, reward, next_state, is_terminal_next_state)
         train_step = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE).minimize(loss)
         self.sess.run(train_step, feed_dict={curr_state: t.get_curr_state(), action: t.get_action(),
                                              reward: t.get_reward(), next_state: t.get_next_state(),
                                              is_terminal_next_state: t.get_is_terminal_next_state()})
 
 
-    def calculate_loss(self, curr_state, action, reward, next_state, is_terminal_next_state):
+    def calculate_loss_single(self, curr_state, action, reward, next_state, is_terminal_next_state):
         y_i = tf.cond(is_terminal_next_state, lambda: reward,
                       lambda: reward + self.DISCOUNT_FACTOR * self.evaluate(next_state, self.select_action(next_state, 0.0)))
         y = self.evaluate(curr_state, action)
