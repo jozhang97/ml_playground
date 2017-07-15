@@ -50,14 +50,14 @@ class Transition:
 
 def merge_transitions(transitions):
     # iterable of transition objects
-    states, actions, rewards, next_states, is_terminal_next_state = [], [], [], [], []
+    states, actions, rewards, next_states, is_terminal_next_states = [], [], [], [], []
     for transition in transitions:
         states.append(transition.get_curr_state())
         actions.append(transition.get_action())
         rewards.append(transition.get_reward())
         next_states.append(transition.get_next_state())
-        is_terminal_next_state.append(transition.get_is_terminal_next_state())
-    return np.array(states), np.array(actions), np.array(rewards), np.array(next_states)
+        is_terminal_next_states.append(transition.get_is_terminal_next_state())
+    return np.array(states), np.array(actions), np.array(rewards), np.array(next_states), is_terminal_next_states
 
 
 
