@@ -15,11 +15,6 @@ def convert_transitions_to_map(transitions, model):
         model.is_terminal_next_states: is_terminal_next_states
     }
 
-def sync_target_model(model, target_model):
-    target_model.W = model.W
-    # TODO SYNC THE CONV TOO
-
-
 def zero_maxQ_in_terminal_states(maxQ, is_terminals):
     # zero out the elements of the maxQ vector where it is terminal state
     def zero_terminal(reward, is_terminal):

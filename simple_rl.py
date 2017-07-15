@@ -1,7 +1,7 @@
 import gym
 import tensorflow as tf
 from model import Model
-from simple_rl_helper import preprocess, convert_transitions_to_map, sync_target_model, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph
+from simple_rl_helper import preprocess, convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph
 from replay import Replay
 from transition import Transition
 import random

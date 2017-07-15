@@ -16,6 +16,8 @@ class Model:
         self.state_shape = observation_space.shape
         self.states = tf.placeholder(dtype=tf.float32, shape=(None, self.state_shape[0], self.state_shape[1], self.state_shape[2]))
 
+        # TODO make the model CNN
+        # Why does it always go to one completely?
         self.max_pooled_states = tf.nn.max_pool(self.states, ksize=[1,7,7,1], strides=[1,2,2,1], padding='VALID')
         n, x, y, c = self.max_pooled_states.get_shape().as_list()
         self.states_reshaped = tf.reshape(self.max_pooled_states, [-1, x*y*c])
@@ -37,14 +39,8 @@ class Model:
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)
         self.train_step = self.optimizer.minimize(self.loss)
 
-    def evaluate_target(self, state, action):
-        # evaluates the value of the state action pair with the target network
-        temp = self.W
-        self.W = self.W_target
-        ret = self.evaluate_target(state, action)
-        self.W = temp
-        return ret
 
     def update_learning_rate(self, multiplicative_factor):
         # makes learning rate smaller
+        # idk if this will work
         self.LEARNING_RATE *= min(multiplicative_factor, 1)
