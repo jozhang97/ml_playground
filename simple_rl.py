@@ -1,7 +1,7 @@
 import gym
 import tensorflow as tf
 from model import Model
-from simple_rl_helper import preprocess, convert_transitions_to_map, sync_target_model, zero_rewards_in_terminal_states
+from simple_rl_helper import preprocess, convert_transitions_to_map, sync_target_model, zero_maxQ_in_terminal_states
 from replay import Replay
 from transition import Transition
 import random
@@ -49,8 +49,9 @@ for n in range(NUM_ITER):
     batch_transitions = replay.pick_batch_transitions()
     train_step_map = convert_transitions_to_map(batch_transitions, model)
 
-    rewards_zeroed = zero_rewards_in_terminal_states(train_step_map[model.rewards], train_step_map[model.is_terminal_next_states])
-    targetQ = sess.run(target_model.maxQ, feed_dict={target_model.states: train_step_map[model.states]}) + rewards_zeroed
+    maxQ = sess.run(target_model.maxQ, feed_dict={target_model.states: train_step_map[model.states]})
+    maxQ_zeroed = zero_maxQ_in_terminal_states(maxQ, train_step_map[model.is_terminal_next_states])
+    targetQ = DISCOUNT_FACTOR * train_step_map[model.rewards] + maxQ_zeroed
     train_step_map[model.targetQ] = targetQ
     sess.run(model.train_step, feed_dict=train_step_map)
 

@@ -19,9 +19,9 @@ class Model:
         self.max_pooled_states = tf.nn.max_pool(self.states, ksize=[1,7,7,1], strides=[1,2,2,1], padding='VALID')
         n, x, y, c = self.max_pooled_states.get_shape().as_list()
         self.states_reshaped = tf.reshape(self.max_pooled_states, [-1, x*y*c])
-        self.Q = tf.nn.softmax(tf.matmul(self.states_reshaped, self.W))
-        self.maxQ = tf.reduce_max(self.Q, axis=1)  # how did they pick best action as opposed to max Q ... idk if right axis
-        self.predictions = tf.cast(tf.argmax(self.Q), tf.int32)
+        self.Q_list = tf.nn.softmax(tf.matmul(self.states_reshaped, self.W))
+        self.maxQ = tf.reduce_max(self.Q_list, axis=1)  # how did they pick best action as opposed to max Q ... idk if right axis
+        self.predictions = tf.cast(tf.argmax(self.Q_list), tf.int32)
 
         self.actions = tf.placeholder(dtype=tf.int32, shape=(None,))
         self.rewards = tf.placeholder(dtype=tf.int32, shape=(None,))
@@ -29,6 +29,7 @@ class Model:
         self.is_terminal_next_states = tf.placeholder(dtype=tf.bool, shape=(None,))
 
         self.actions_one_hotted = tf.one_hot(self.actions, depth=self.num_actions, dtype=tf.float32, axis=-1)
+        self.Q = tf.reduce_sum(tf.multiply(self.Q_list, self.num_actions), axis=1)
         self.targetQ = tf.placeholder(shape=[None], dtype=tf.float32)
 
         # Batch gradient descent update

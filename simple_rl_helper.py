@@ -20,10 +20,10 @@ def sync_target_model(model, target_model):
     # TODO SYNC THE CONV TOO
 
 
-def zero_rewards_in_terminal_states(rewards, is_terminals):
-    # zero out the elements of the rewards vector where it is terminal state
+def zero_maxQ_in_terminal_states(maxQ, is_terminals):
+    # zero out the elements of the maxQ vector where it is terminal state
     def zero_terminal(reward, is_terminal):
         if is_terminal:
             return 0
         return reward
-    return np.vectorize(zero_terminal)(rewards, is_terminals)
+    return np.vectorize(zero_terminal)(maxQ, is_terminals)
