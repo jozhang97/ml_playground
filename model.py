@@ -39,6 +39,10 @@ class Model:
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)
         self.train_step = self.optimizer.minimize(self.loss)
 
+        tf.summary.scalar("Total loss", self.loss)
+        self.merged_summaries = tf.summary.merge_all()
+
+
 
     def update_learning_rate(self, multiplicative_factor):
         # makes learning rate smaller
