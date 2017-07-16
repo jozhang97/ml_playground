@@ -32,7 +32,7 @@ sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
 saver = tf.train.Saver() # TODO Implement this
-
+# TODO IMPLEMENT TENSORBOARD
 trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
 

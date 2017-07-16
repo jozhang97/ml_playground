@@ -23,16 +23,16 @@ def zero_maxQ_in_terminal_states(maxQ, is_terminals):
         return reward
     return np.vectorize(zero_terminal)(maxQ, is_terminals)
 
-
-# TODO UNDERSTAND BELOW
-def updateTargetGraph(tfVars,tau=0.001):
+def updateTargetGraph(tfVars,tau=0.9):
+    # for the first half of the trainable variables, assign its value to its equivalent on the other half
+    # tau is how much we take on from the first half. 1-tau is how much we hold onto
     total_vars = len(tfVars)
+    half_vars = total_vars // 2
     op_holder = []
-    for idx,var in enumerate(tfVars[0:total_vars//2]):
-        op_holder.append(tfVars[idx+total_vars//2].assign((var.value()*tau) + ((1-tau)*tfVars[idx+total_vars//2].value())))
+    for idx, var in enumerate(tfVars[0:half_vars]):
+        op_holder.append(tfVars[idx+half_vars].assign((var.value()*tau) + ((1-tau)*tfVars[idx+half_vars].value())))
     return op_holder
 
-# TODO UNDERSTAND BELOW
 def updateTarget(op_holder,sess):
     for op in op_holder:
         sess.run(op)
