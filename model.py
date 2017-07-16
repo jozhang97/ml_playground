@@ -12,6 +12,7 @@ class Model:
         self.W = tf.Variable(tf.truncated_normal([self.input_size, self.output_size], 0.1))
         self.DISCOUNT_FACTOR = DISCOUNT_FACTOR
         self.LEARNING_RATE = INITIAL_LEARNING_RATE
+        self.REGULARIZATION_COEFF = 0.9
 
         self.state_shape = observation_space.shape
         self.states = tf.placeholder(dtype=tf.float32, shape=(None, self.state_shape[0], self.state_shape[1], self.state_shape[2]))
@@ -35,10 +36,14 @@ class Model:
         self.targetQ = tf.placeholder(shape=[None], dtype=tf.float32)
 
         # Batch gradient descent update
-        self.loss = tf.reduce_mean(tf.nn.l2_loss(self.targetQ - self.Q))
+        self.regularization_loss = self.REGULARIZATION_COEFF * tf.norm(self.W)
+        self.simple_loss = tf.reduce_mean(tf.nn.l2_loss(self.targetQ - self.Q))
+        self.loss = self.regularization_loss + self.simple_loss
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)
         self.train_step = self.optimizer.minimize(self.loss)
 
+        tf.summary.scalar("Regularization loss", self.regularization_loss)
+        tf.summary.scalar("Simple loss", self.simple_loss)
         tf.summary.scalar("Total loss", self.loss)
         self.merged_summaries = tf.summary.merge_all()
 
