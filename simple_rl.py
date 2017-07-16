@@ -6,6 +6,11 @@ from replay import Replay
 from transition import Transition
 import random
 
+# Look advice from this repo: https://github.com/awjuliani/DeepRL-Agents/blob/master/Double-Dueling-DQN.ipynb
+# look into these projects
+# https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim
+# https://github.com/dylanthomas/tensorflow/blob/master/xavier_init.py
+
 # HYPERPARAMETERS
 RANDOM_ACTION_PROBABILITY = 0.3  # aka epsilon
 DISCOUNT_FACTOR = 0.9  # gamma
