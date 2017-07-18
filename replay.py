@@ -12,7 +12,7 @@ class Replay():
             self.replay.pop()
         self.replay.add(transition)
 
-    def pick_random_transition(self):
+    def pick_batch_transitions(self):
         return random.sample(self.replay, min(self.BATCH_SIZE, len(self.replay)))
 
     def __str__(self):
