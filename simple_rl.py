@@ -19,6 +19,7 @@ BATCH_SIZE = 64
 NUM_ITER = 2000
 INITIAL_LEARNING_RATE = 0.9
 TARGET_NETWORK_UPDATE_ITER = 10
+SAVE_PER_I_ITERATION = 100
 
 # ENVIRONMENT
 game_name = "Breakout-v0"
@@ -36,7 +37,7 @@ replay = Replay(REPLAY_MEMORY_SIZE, BATCH_SIZE)
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
-saver = tf.train.Saver() # TODO Implement this
+saver = tf.train.Saver()
 
 train_writer = tf.summary.FileWriter('tensorboard_logs/train', sess.graph)
 test_writer = tf.summary.FileWriter('tensorboard_logs/test')
@@ -76,3 +77,7 @@ for i in range(NUM_ITER):
     curr_state = next_state
     if done:
         curr_state = preprocess(env.reset())
+
+    if i % SAVE_PER_I_ITERATION == 0:
+        saver.save(sess, 'tmp/my-model', global_step=i)
+
