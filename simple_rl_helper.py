@@ -2,10 +2,6 @@ from transition import merge_transitions
 import numpy as np
 import tensorflow as tf
 
-def preprocess(image):
-    # TODO: Implement this
-    return image
-
 def convert_transitions_to_map(transitions, model):
     states, actions, rewards, next_states, is_terminal_next_states = merge_transitions(transitions)
     return {

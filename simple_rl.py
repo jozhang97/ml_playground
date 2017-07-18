@@ -1,7 +1,7 @@
 import gym
 import tensorflow as tf
 from model import Model
-from simple_rl_helper import preprocess, convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model
+from simple_rl_helper import convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model
 from replay import Replay
 from transition import Transition
 import random
@@ -24,7 +24,7 @@ SAVE_PER_I_ITERATION = 10000
 # ENVIRONMENT
 game_name = "Breakout-v0"
 env = gym.make(game_name)
-curr_state = preprocess(env.reset())
+curr_state = env.reset()
 action_space = env.action_space
 observation_space = env.observation_space
 
@@ -59,8 +59,7 @@ for i in range(NUM_ITER):
         print(action)
         train_writer.flush()
 
-    next_pstate, reward, done, info = env.step(action)
-    next_state = preprocess(next_pstate)
+    next_state, reward, done, info = env.step(action)
 
     replay.add_transition(Transition(curr_state, action, reward, next_state, done))
 
@@ -76,7 +75,7 @@ for i in range(NUM_ITER):
 
     curr_state = next_state
     if done:
-        curr_state = preprocess(env.reset())
+        curr_state = env.reset()
 
     if i % SAVE_PER_I_ITERATION == 0 and i != 0:
         saver.save(sess, 'tmp/my-model', global_step=i)

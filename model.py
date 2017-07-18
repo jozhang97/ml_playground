@@ -16,6 +16,7 @@ class Model:
 
         self.state_shape = observation_space.shape
         self.states = tf.placeholder(dtype=tf.float32, shape=(None, self.state_shape[0], self.state_shape[1], self.state_shape[2]))
+        self.processed_states = self.preprocess(self.states)
         self.model_function()
         self.predict_function()
         self.lose_function()
@@ -24,7 +25,7 @@ class Model:
 
     def model_function(self):
         # TODO make the model CNN
-        self.max_pooled_states = tf.nn.max_pool(self.states, ksize=[1,7,7,1], strides=[1,2,2,1], padding='VALID')
+        self.max_pooled_states = tf.nn.max_pool(self.processed_states, ksize=[1,7,7,1], strides=[1,2,2,1], padding='VALID')
 
     def predict_function(self):
         n, x, y, c = self.max_pooled_states.get_shape().as_list()
@@ -55,6 +56,7 @@ class Model:
         tf.summary.scalar("Regularization loss", self.regularization_loss)
         tf.summary.scalar("Simple loss", self.simple_loss)
         tf.summary.scalar("Total loss", self.loss)
+        tf.summary.image("Batch pictures", self.states)
         self.merged_summaries = tf.summary.merge_all()
 
 
@@ -62,3 +64,8 @@ class Model:
         # makes learning rate smaller
         # idk if this will work
         self.LEARNING_RATE *= min(multiplicative_factor, 1)
+
+    def preprocess(self, state):
+        # TODO Implement this
+        # We are going to do the preprocessing after storing the unprocessed states in the Transition object
+        return state
