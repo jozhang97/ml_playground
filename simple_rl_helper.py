@@ -1,5 +1,6 @@
 from transition import merge_transitions
 import numpy as np
+import tensorflow as tf
 
 def preprocess(image):
     # TODO: Implement this
@@ -36,3 +37,8 @@ def updateTargetGraph(tfVars,tau=0.9):
 def updateTarget(op_holder,sess):
     for op in op_holder:
         sess.run(op)
+
+def restore_model(sess):
+    name = 'tmp/my-model-0.meta'
+    new_saver = tf.train.import_meta_graph(name)
+    new_saver.restore(sess, tf.train.latest_checkpoint('/tmp'))

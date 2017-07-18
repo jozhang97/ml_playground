@@ -1,7 +1,7 @@
 import gym
 import tensorflow as tf
 from model import Model
-from simple_rl_helper import preprocess, convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph
+from simple_rl_helper import preprocess, convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model
 from replay import Replay
 from transition import Transition
 import random
@@ -19,7 +19,7 @@ BATCH_SIZE = 64
 NUM_ITER = 2000
 INITIAL_LEARNING_RATE = 0.9
 TARGET_NETWORK_UPDATE_ITER = 10
-SAVE_PER_I_ITERATION = 100
+SAVE_PER_I_ITERATION = 10000
 
 # ENVIRONMENT
 game_name = "Breakout-v0"
@@ -78,6 +78,5 @@ for i in range(NUM_ITER):
     if done:
         curr_state = preprocess(env.reset())
 
-    if i % SAVE_PER_I_ITERATION == 0:
+    if i % SAVE_PER_I_ITERATION == 0 and i != 0:
         saver.save(sess, 'tmp/my-model', global_step=i)
-
