@@ -1,12 +1,14 @@
 import tensorflow as tf
-# TODO ADD WEIGHT DECAY
-
+def add_weight_loss(W):
+    weight_loss = tf.nn.l2_loss(W, name="weight_loss")
+    tf.add_to_collection('losses', weight_loss)
 
 def apply_cnn_layer(x, shape, constant=0.1, stride=3, stddev=0.1):
     W = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
     b = tf.Variable(tf.constant(constant, shape=(shape[3],)))
     conv = tf.nn.conv2d(x, W, strides=[1, stride, stride, 1], padding='SAME')
     ret = tf.nn.bias_add(conv, b)
+    add_weight_loss(W)
     return ret
 
 
@@ -28,4 +30,5 @@ def apply_fc_layer(x, output_size, constant=0.1, stddev=0.1):
     added_bias = tf.nn.bias_add(multiplied, b)
     # apply RELU after
     relu = tf.nn.relu(added_bias)
+    add_weight_loss(W)
     return relu

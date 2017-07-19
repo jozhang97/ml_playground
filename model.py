@@ -53,16 +53,15 @@ class Model:
 
     def update_function(self):
         # Batch gradient descent update
-        self.regularization_loss = 0
-        # TODO ADD WEIGHT DECAY
-        self.simple_loss = tf.reduce_mean(tf.nn.l2_loss(self.targetQ - self.Q))
-        self.loss = self.regularization_loss + self.simple_loss
+        self.mean_squared_loss = tf.reduce_mean(tf.nn.l2_loss(self.targetQ - self.Q)) / self.REGULARIZATION_COEFF
+        tf.add_to_collection('losses', self.mean_squared_loss)
+        self.loss = tf.add_n(tf.get_collection('losses'))
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)
         self.train_step = self.optimizer.minimize(self.loss)
 
     def summary_function(self):
-        tf.summary.scalar("Regularization_loss", self.regularization_loss)
-        tf.summary.scalar("Simple_loss", self.simple_loss)
+        tf.summary.scalar("Regularization_loss", self.loss - self.mean_squared_loss)
+        tf.summary.scalar("Simple_loss", self.mean_squared_loss)
         tf.summary.scalar("Total_loss", self.loss)
         tf.summary.image("Batch_pictures", self.states)
         tf.summary.image("Batch_pictures_processed", self.processed_states)
