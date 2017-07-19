@@ -3,7 +3,8 @@
 # Using concat instead of stack to combine half-feature vectors
 # Q(s,a; theta) means we have run the state through CNN and then have num_actions outputs that are the probabilities
 import tensorflow as tf  # look into using keras
-from simple_rl_helper import preprocess, apply_cnn_layer, apply_fc_layer
+from simple_rl_helper import preprocess
+from network_helper import apply_cnn_layer, apply_fc_layer, apply_maxpool_layer
 
 
 class Model:
@@ -26,9 +27,8 @@ class Model:
     def model_function(self):
         # TODO make the model CNN
         self.layer_conv1 = apply_cnn_layer(self.processed_states, [7,7,3,64])
-        self.max_pooled_states = tf.nn.max_pool(self.layer_conv1, ksize=[1, 7, 7, 1], strides=[1, 2, 2, 1],
-                                                padding='VALID')
-        self.layer_fc1 = apply_fc_layer(self.max_pooled_states, self.num_actions)
+        self.layer_maxp1 = apply_maxpool_layer(self.layer_conv1, size=7, stride=2)
+        self.layer_fc1 = apply_fc_layer(self.layer_maxp1, self.num_actions)
         self.Q_list = tf.nn.softmax(self.layer_fc1)
 
     def predict_function(self):
@@ -50,6 +50,7 @@ class Model:
     def update_function(self):
         # Batch gradient descent update
         self.regularization_loss = 0
+        # TODO ADD WEIGHT DECAY
         self.simple_loss = tf.reduce_mean(tf.nn.l2_loss(self.targetQ - self.Q))
         self.loss = self.regularization_loss + self.simple_loss
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)

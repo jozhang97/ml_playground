@@ -69,26 +69,3 @@ def apply_mean_subtraction(image):
     return image
 
 
-def apply_cnn_layer(x, shape, constant=0.1, stride=3, stddev=0.1):
-    W = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
-    b = tf.Variable(tf.constant(constant, shape=(shape[3],)))
-    conv = tf.nn.conv2d(x, W, strides=[1, stride, stride, 1], padding='VALID')
-    ret = tf.nn.bias_add(conv, b)
-    return ret
-
-
-def apply_fc_layer(x, output_size, constant=0.1, stddev=0.1):
-    # first, flatten x to be n by d
-    shape = x.get_shape().as_list()
-    if len(shape) != 1:
-        a, b, c, d = shape
-        x = tf.reshape(x, [-1, b * c * d])
-    input_size = x.get_shape().as_list()[1]
-    # multiply out
-    W = tf.Variable(tf.truncated_normal([input_size, output_size], stddev))
-    b = tf.Variable(tf.constant(constant, shape=(output_size,)))
-    multiplied = tf.matmul(x, W)
-    added_bias = tf.nn.bias_add(multiplied, b)
-    return added_bias
-
-
