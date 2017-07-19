@@ -12,7 +12,7 @@ import random
 # https://github.com/dylanthomas/tensorflow/blob/master/xavier_init.py
 
 # HYPERPARAMETERS
-RANDOM_ACTION_PROBABILITY = 0.3  # aka epsilon
+RANDOM_ACTION_PROBABILITY = 0.05  # aka epsilon
 DISCOUNT_FACTOR = 0.9  # gamma
 REPLAY_MEMORY_SIZE = 100
 BATCH_SIZE = 64
@@ -45,6 +45,7 @@ test_writer = tf.summary.FileWriter('tensorboard_logs/test')
 trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
 
+# restore_model(sess)
 for i in range(NUM_ITER):
     env.render()
     if i % TARGET_NETWORK_UPDATE_ITER == 0:
