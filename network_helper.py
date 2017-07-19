@@ -1,7 +1,8 @@
 import tensorflow as tf
+
 def add_weight_loss(W):
     weight_loss = tf.nn.l2_loss(W, name="weight_loss")
-    tf.add_to_collection('losses', weight_loss)
+    tf.add_to_collection('weight_losses', weight_loss)
 
 def apply_cnn_layer(x, shape, constant=0.1, stride=3, stddev=0.1):
     W = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
