@@ -1,6 +1,8 @@
 from transition import merge_transitions
 import numpy as np
 import tensorflow as tf
+import os
+import shutil
 
 # CALLED BY SIMPLE_RL
 def convert_transitions_to_map(transitions, model):
@@ -39,5 +41,11 @@ def restore_model(sess):
     name = 'tmp/my-model-0.meta'
     new_saver = tf.train.import_meta_graph(name)
     new_saver.restore(sess, tf.train.latest_checkpoint('/tmp'))
+
+def remove_previous_logs():
+    if os.path.exists("tensorboard_logs/train"):
+        shutil.rmtree("tensorboard_logs/train")
+    if os.path.exists("tensorboard_logs/test"):
+        shutil.rmtree("tensorboard_logs/test")
 
 

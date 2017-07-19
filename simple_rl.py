@@ -1,7 +1,7 @@
 import gym
 import tensorflow as tf
 from model import Model
-from simple_rl_helper import convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model
+from simple_rl_helper import convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model, remove_previous_logs
 from replay import Replay
 from transition import Transition
 import random
@@ -39,8 +39,9 @@ sess.run(tf.global_variables_initializer())
 
 saver = tf.train.Saver()
 
+remove_previous_logs()
 train_writer = tf.summary.FileWriter('tensorboard_logs/train', sess.graph)
-test_writer = tf.summary.FileWriter('tensorboard_logs/test')
+# test_writer = tf.summary.FileWriter('tensorboard_logs/test')
 
 trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
