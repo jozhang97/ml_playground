@@ -25,15 +25,19 @@ class Model:
         self.summary_function()
 
     def model_function(self):
-        # TODO make the model CNN
-        self.layer_conv1 = apply_cnn_layer(self.processed_states, [7,7,3,64])
+        self.layer_conv1 = apply_cnn_layer(self.processed_states, [7, 7, 3, 64])
         self.layer_maxp1 = apply_maxpool_layer(self.layer_conv1, size=7, stride=2)
-        self.layer_fc1 = apply_fc_layer(self.layer_maxp1, self.num_actions)
-        self.Q_list = tf.nn.softmax(self.layer_fc1)
+        self.layer_conv2 = apply_cnn_layer(self.layer_maxp1, [3, 3, 64, 128])
+        self.layer_maxp2 = apply_maxpool_layer(self.layer_conv2, size=3, stride=2)
+        self.layer_conv3 = apply_cnn_layer(self.layer_maxp2, [3, 3, 128, 256])
+        self.layer_maxp3 = apply_maxpool_layer(self.layer_conv3, size=3, stride=2)
+        self.layer_fc1 = apply_fc_layer(self.layer_maxp3, 128)
+        self.layer_relu1 = tf.nn.relu(self.layer_fc1)
+        self.layer_fc2 = apply_fc_layer(self.layer_relu1, self.num_actions)
+        self.Q_list = tf.nn.softmax(self.layer_fc2)
 
     def predict_function(self):
-        self.maxQ = tf.reduce_max(self.Q_list,
-                                  axis=1)  # how did they pick best action as opposed to max Q ... idk if right axis
+        self.maxQ = tf.reduce_max(self.Q_list, axis=1)  # how did they pick best action as opposed to max Q ... idk if right axis
         self.predictions = tf.cast(tf.argmax(self.Q_list, axis=1), tf.int32)
 
     def lose_function(self):
