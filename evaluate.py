@@ -1,7 +1,7 @@
 import gym
 import tensorflow as tf
 
-from helper.simple_rl_helper import restore_model
+from helper.simple_rl_helper import restore_model, run_all_actions
 from model import Model
 
 NUM_ITER = 2000
@@ -19,7 +19,7 @@ saver = tf.train.Saver()
 
 restore_model(sess)
 
-
+run_all_actions(env)
 for i in range(NUM_ITER):
     env.render()
     action = sess.run(model.predictions, feed_dict={model.states: [curr_state]})[0]
@@ -32,5 +32,5 @@ for i in range(NUM_ITER):
     curr_state = next_state
     if done:
         curr_state = env.reset()
-
+        run_all_actions(env)
 

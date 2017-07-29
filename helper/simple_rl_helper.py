@@ -7,8 +7,10 @@ import sys
 sys.path.append("/Users/jeff/Documents/Research/playground")
 from replay.transition import merge_transitions
 
+def run_all_actions(env):
+    for action in range(env.action_space.n):
+        env.step(action)
 
-# CALLED BY TRAIN
 def convert_transitions_to_map(transitions, model):
     states, actions, rewards, next_states, is_terminal_next_states = merge_transitions(transitions)
     return {

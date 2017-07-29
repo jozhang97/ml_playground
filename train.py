@@ -4,7 +4,7 @@ import gym
 import tensorflow as tf
 from replay.transition import Transition
 
-from helper.simple_rl_helper import convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model, remove_previous_logs
+from helper.simple_rl_helper import convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model, remove_previous_logs, run_all_actions
 from model import Model
 from replay.replay import Replay
 
@@ -50,8 +50,7 @@ trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
 
 restore_model(sess)
-for action in range(action_space.n):
-    env.step(action)
+run_all_actions(env)
 for i in range(NUM_ITER):
     env.render()
     if i % TARGET_NETWORK_UPDATE_ITER == 0:
@@ -83,8 +82,9 @@ for i in range(NUM_ITER):
     curr_state = next_state
     if done:
         curr_state = env.reset()
+        run_all_actions(env)
 
-    if i % SAVE_PER_I_ITERATION == 0 and i != 0:
+    if i % SAVE_PER_I_ITERATION == 0:
         print("Saving the model")
         saver.save(sess, 'tmp/my-model', global_step=i)
         model.update_learning_rate(0.5)
