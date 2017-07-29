@@ -18,7 +18,7 @@ RANDOM_ACTION_PROBABILITY = 0.05  # aka epsilon
 DISCOUNT_FACTOR = 0.9  # gamma
 REPLAY_MEMORY_SIZE = 100
 BATCH_SIZE = 64
-NUM_ITER = 100000
+NUM_ITER = 20000
 INITIAL_LEARNING_RATE = 0.9
 TARGET_NETWORK_UPDATE_ITER = 10
 SAVE_PER_I_ITERATION = 1000
@@ -49,10 +49,10 @@ train_writer = tf.summary.FileWriter('tensorboard_logs/train', sess.graph)
 trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
 
-restore_model(sess)
+#restore_model(sess)
 run_all_actions(env)
 for i in range(NUM_ITER):
-    env.render()
+    # env.render()
     if i % TARGET_NETWORK_UPDATE_ITER == 0:
         print("Updating target network")
         updateTarget(target_sync_ops, sess)
