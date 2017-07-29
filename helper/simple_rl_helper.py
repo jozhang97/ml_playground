@@ -59,6 +59,12 @@ def remove_previous_logs():
     if os.path.exists("../tensorboard_logs/train"):
         shutil.rmtree("../tensorboard_logs/train")
         print("Removing old tensorboard_logs")
+    if os.path.exists("tensorboard_logs/train"):
+        shutil.rmtree("tensorboard_logs/train")
+        print("Removing old tensorboard_logs")
     if os.path.exists("../tensorboard_logs/test"):
         shutil.rmtree("../tensorboard_logs/test")
+        print("Removing old tensorboard_logs")
+    if os.path.exists("tensorboard_logs/test"):
+        shutil.rmtree("tensorboard_logs/test")
         print("Removing old tensorboard_logs")
