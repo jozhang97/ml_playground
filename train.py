@@ -1,10 +1,12 @@
+import random
+
 import gym
 import tensorflow as tf
+from replay.transition import Transition
+
+from helper.simple_rl_helper import convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model, remove_previous_logs
 from model import Model
-from simple_rl_helper import convert_transitions_to_map, zero_maxQ_in_terminal_states, updateTarget, updateTargetGraph, restore_model, remove_previous_logs
-from replay import Replay
-from transition import Transition
-import random
+from replay.replay import Replay
 
 # Look advice from this repo: https://github.com/awjuliani/DeepRL-Agents/blob/master/Double-Dueling-DQN.ipynb
 # look into these projects
@@ -19,7 +21,9 @@ BATCH_SIZE = 64
 NUM_ITER = 100000
 INITIAL_LEARNING_RATE = 0.9
 TARGET_NETWORK_UPDATE_ITER = 10
-SAVE_PER_I_ITERATION = 10000
+SAVE_PER_I_ITERATION = 1000
+
+remove_previous_logs()
 
 # ENVIRONMENT
 game_name = "Breakout-v0"
@@ -40,16 +44,16 @@ sess.run(tf.global_variables_initializer())
 
 saver = tf.train.Saver()
 
-remove_previous_logs()
 train_writer = tf.summary.FileWriter('tensorboard_logs/train', sess.graph)
-# test_writer = tf.summary.FileWriter('tensorboard_logs/test')
 
 trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
 
-# restore_model(sess)
+restore_model(sess)
+for action in range(action_space.n):
+    env.step(action)
 for i in range(NUM_ITER):
-    # env.render()
+    env.render()
     if i % TARGET_NETWORK_UPDATE_ITER == 0:
         print("Updating target network")
         updateTarget(target_sync_ops, sess)
@@ -81,6 +85,6 @@ for i in range(NUM_ITER):
         curr_state = env.reset()
 
     if i % SAVE_PER_I_ITERATION == 0 and i != 0:
+        print("Saving the model")
         saver.save(sess, 'tmp/my-model', global_step=i)
         model.update_learning_rate(0.5)
-        

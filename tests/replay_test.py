@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
-from replay import Replay
-from transition import Transition
+from replay.replay import Replay
+from replay.transition import Transition
 import numpy as np
 
 def f(arr):
