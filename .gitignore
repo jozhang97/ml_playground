@@ -1,4 +1,3 @@
 *.pyc
 *.idea
 tensorboard_logs/*
-tmp/*
