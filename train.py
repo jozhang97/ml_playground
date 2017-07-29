@@ -50,6 +50,8 @@ trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
 
 restore_model(sess)
+for action in range(action_space.n):
+    env.step(action)
 for i in range(NUM_ITER):
     env.render()
     if i % TARGET_NETWORK_UPDATE_ITER == 0:
