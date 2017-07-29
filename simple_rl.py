@@ -16,7 +16,7 @@ RANDOM_ACTION_PROBABILITY = 0.05  # aka epsilon
 DISCOUNT_FACTOR = 0.9  # gamma
 REPLAY_MEMORY_SIZE = 100
 BATCH_SIZE = 64
-NUM_ITER = 2000
+NUM_ITER = 100000
 INITIAL_LEARNING_RATE = 0.9
 TARGET_NETWORK_UPDATE_ITER = 10
 SAVE_PER_I_ITERATION = 10000
@@ -82,3 +82,5 @@ for i in range(NUM_ITER):
 
     if i % SAVE_PER_I_ITERATION == 0 and i != 0:
         saver.save(sess, 'tmp/my-model', global_step=i)
+        model.update_learning_rate(0.5)
+        
