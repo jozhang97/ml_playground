@@ -41,7 +41,6 @@ saver = tf.train.Saver()
 
 remove_previous_logs()
 train_writer = tf.summary.FileWriter('tensorboard_logs/train', sess.graph)
-# test_writer = tf.summary.FileWriter('tensorboard_logs/test')
 
 trainables = tf.trainable_variables()
 target_sync_ops = updateTargetGraph(trainables)
