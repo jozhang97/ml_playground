@@ -16,7 +16,7 @@ RANDOM_ACTION_PROBABILITY = 0.05  # aka epsilon
 DISCOUNT_FACTOR = 0.9  # gamma
 REPLAY_MEMORY_SIZE = 100
 BATCH_SIZE = 64
-NUM_ITER = 2000
+NUM_ITER = 100000
 INITIAL_LEARNING_RATE = 0.9
 TARGET_NETWORK_UPDATE_ITER = 10
 SAVE_PER_I_ITERATION = 10000
@@ -34,7 +34,8 @@ target_model = Model(action_space, observation_space)
 replay = Replay(REPLAY_MEMORY_SIZE, BATCH_SIZE)
 
 # Set up tf
-sess = tf.Session()
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
+sess = tf.Session(config=tf.ConfigProto(log_device_placement=True, gpu_options=gpu_options))
 sess.run(tf.global_variables_initializer())
 
 saver = tf.train.Saver()
@@ -47,7 +48,7 @@ target_sync_ops = updateTargetGraph(trainables)
 
 # restore_model(sess)
 for i in range(NUM_ITER):
-    env.render()
+    # env.render()
     if i % TARGET_NETWORK_UPDATE_ITER == 0:
         print("Updating target network")
         updateTarget(target_sync_ops, sess)
@@ -80,3 +81,5 @@ for i in range(NUM_ITER):
 
     if i % SAVE_PER_I_ITERATION == 0 and i != 0:
         saver.save(sess, 'tmp/my-model', global_step=i)
+        model.update_learning_rate(0.5)
+        
