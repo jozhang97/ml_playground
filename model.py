@@ -3,8 +3,9 @@
 # Using concat instead of stack to combine half-feature vectors
 # Q(s,a; theta) means we have run the state through CNN and then have num_actions outputs that are the probabilities
 import tensorflow as tf  # look into using keras
-from preprocess_helper import preprocess
-from network_helper import apply_cnn_layer, apply_fc_layer, apply_maxpool_layer
+from helper.preprocess_helper import preprocess
+
+from helper.network_helper import apply_cnn_layer, apply_fc_layer, apply_maxpool_layer
 
 
 class Model:

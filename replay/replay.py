@@ -1,4 +1,3 @@
-from transition import Transition
 import random as random
 
 class Replay():

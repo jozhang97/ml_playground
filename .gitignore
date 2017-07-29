@@ -2,3 +2,6 @@
 *.idea
 tensorboard_logs/*
 tmp/*
+__init__.py
+helper/__init__.py
+replay/__init__.py
