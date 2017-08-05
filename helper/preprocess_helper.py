@@ -1,4 +1,7 @@
 import tensorflow as tf
+import numpy as np
+
+mean = np.array([[[122.0]], [[116.0]], [[104.0]]])
 
 # CALLED BY MODEL
 def preprocess(images):
@@ -6,6 +9,7 @@ def preprocess(images):
     # TODO Test preprocess
     processed_images = tf.map_fn(preprocess_helper, images)
     return processed_images
+
 
 def preprocess_helper(image):
     height, width, num_channels = image.get_shape().as_list()
@@ -18,12 +22,8 @@ def preprocess_helper(image):
     image = tf.pad(image, [[2,2],[2,2],[0,0]], "SYMMETRIC")
     return image
 
+
 def apply_mean_subtraction(image):
-    return image
-    # TODO Write mean subtraction
-    image = tf.transpose(image, perm=[2, 0, 1])
-    mean = tf.constant([122.0, 116.0, 104.0])
-    image = tf.subtract(image, mean)
-    image = tf.transpose(image, perm=[1, 2, 0])
-    return image
+    return tf.subtract(image, mean)
+    # TODO verify this is correct
 
