@@ -1,4 +1,5 @@
 import tensorflow as tf
+import math
 
 def add_weight_loss(W):
     weight_loss = tf.nn.l2_loss(W, name="weight_loss")
@@ -17,12 +18,13 @@ def apply_maxpool_layer(x, size=3, stride=2):
     return tf.nn.max_pool(x, ksize=[1, size, size, 1], strides=[1, stride, stride, 1], padding="SAME")
 
 
-def apply_fc_layer(x, output_size, constant=0.1, stddev=0.1):
+def apply_fc_layer(x, output_size, constant=0.0, stddev=0.1):
     # first, flatten x to be n by d
     shape = x.get_shape().as_list()
     if len(shape) != 2:
         a, b, c, d = shape
         x = tf.reshape(x, [-1, b * c * d])
+        stddev = math.sqrt(2.0/b*c*d)  # see delving deep into rectifiers by msr
     input_size = x.get_shape().as_list()[1]
     # multiply out
     W = tf.Variable(tf.truncated_normal([input_size, output_size], stddev))
