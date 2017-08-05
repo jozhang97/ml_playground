@@ -58,7 +58,9 @@ class Model:
         self.mean_squared_loss = tf.reduce_mean(tf.nn.l2_loss(self.targetQ - self.Q))
         self.loss = self.regularization_loss * self.REGULARIZATION_COEFF + self.mean_squared_loss
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)
-        self.train_step = self.optimizer.minimize(self.loss)
+        self.gradient = self.optimizer.compute_gradients(self.loss)
+        self.gradient_clipped = [(tf.clip_by_value(grad, -5.0, 5.0), var) for grad, var in self.gradient]
+        self.train_step = self.optimizer.apply_gradients(self.gradient_clipped)
 
     def summary_function(self):
         tf.summary.scalar("Regularization_loss", self.regularization_loss)
