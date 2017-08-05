@@ -1,7 +1,8 @@
 import tensorflow as tf
 import numpy as np
 
-mean = np.array([[[122.0]], [[116.0]], [[104.0]]])
+# mean = np.array([[[122.0]], [[116.0]], [[104.0]]])
+mean = np.array([[[122.0, 116.0, 104.0]]])
 
 # CALLED BY MODEL
 def preprocess(images):
@@ -24,6 +25,6 @@ def preprocess_helper(image):
 
 
 def apply_mean_subtraction(image):
-    return tf.subtract(image, mean)
     # TODO verify this is correct
+    return tf.subtract(image, mean)
 
