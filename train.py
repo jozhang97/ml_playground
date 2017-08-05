@@ -26,7 +26,7 @@ SAVE_PER_I_ITERATION = 1000
 remove_previous_logs()
 
 # ENVIRONMENT
-game_name = "Breakout-v0"
+game_name = "Breakout-v0"  # This game fires balls when action = 1 is called. it is done when you run out of lives. Need to learn when ball gone, to fire.
 env = gym.make(game_name)
 curr_state = env.reset()
 action_space = env.action_space
