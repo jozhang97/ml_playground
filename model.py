@@ -58,9 +58,10 @@ class Model:
         self.mean_squared_loss = tf.reduce_mean(tf.nn.l2_loss(self.targetQ - self.Q))
         self.loss = self.regularization_loss * self.REGULARIZATION_COEFF + self.mean_squared_loss
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.LEARNING_RATE)
-        self.gradient = self.optimizer.compute_gradients(self.loss)
-        self.gradient_clipped = [(tf.clip_by_value(grad, -5.0, 5.0), var) for grad, var in self.gradient]
-        self.train_step = self.optimizer.apply_gradients(self.gradient_clipped)
+        # TODO understand this code
+        self.gradients, variables = zip(*self.optimizer.compute_gradients(self.loss))
+        self.gradients_clipped, _ = tf.clip_by_global_norm(self.gradients, 5.0)
+        self.train_step = self.optimizer.apply_gradients(zip(self.gradients_clipped, variables))
 
     def summary_function(self):
         tf.summary.scalar("Regularization_loss", self.regularization_loss)
@@ -68,6 +69,7 @@ class Model:
         tf.summary.scalar("Total_loss", self.loss)
         tf.summary.image("Batch_pictures", self.states)
         tf.summary.image("Batch_pictures_processed", self.processed_states)
+        # tf.summary.image("First_layer_picture", self.layer_maxp3) how to do this lol
         self.merged_summaries = tf.summary.merge_all()
 
     def update_learning_rate(self, multiplicative_factor):
