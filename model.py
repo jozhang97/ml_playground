@@ -4,13 +4,14 @@
 # Q(s,a; theta) means we have run the state through CNN and then have num_actions outputs that are the probabilities
 import tensorflow as tf  # look into using keras
 from helper.preprocess_helper import preprocess
+from helper.simple_rl_helper import get_num_actions
 
 from helper.network_helper import apply_cnn_layer, apply_fc_layer, apply_maxpool_layer
 
 
 class Model:
     def __init__(self, action_space, observation_space, DISCOUNT_FACTOR=0.9, INITIAL_LEARNING_RATE=0.9):
-        self.num_actions = action_space.n
+        self.num_actions = get_num_actions(action_space)
         self.DISCOUNT_FACTOR = DISCOUNT_FACTOR
         self.LEARNING_RATE = INITIAL_LEARNING_RATE
         self.REGULARIZATION_COEFF = 0.009e-8
@@ -85,5 +86,5 @@ class Model:
 
     def update_learning_rate(self, multiplicative_factor):
         # makes learning rate smaller
-        # idk if this will work
+        # TODO Test this
         self.LEARNING_RATE *= min(multiplicative_factor, 1)

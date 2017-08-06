@@ -8,7 +8,7 @@ sys.path.append("/Users/jeff/Documents/Research/playground")
 from replay.transition import merge_transitions
 
 def run_all_actions(env):
-    for action in range(env.action_space.n):
+    for action in range(get_num_actions(env.action_space)):
         env.step(action)
 
 def convert_transitions_to_map(transitions, model):
@@ -53,6 +53,14 @@ def restore_model(sess):
     name = 'tmp/my-model-0.meta'
     saver = tf.train.import_meta_graph(name)
     saver.restore(sess, tf.train.latest_checkpoint('tmp'))
+
+
+def get_num_actions(action_space):
+    try:
+        num_actions = action_space.n
+    except AttributeError:
+        num_actions = action_space.shape[0]
+    return num_actions
 
 
 def remove_previous_logs():
