@@ -13,7 +13,7 @@ class Model:
         self.num_actions = action_space.n
         self.DISCOUNT_FACTOR = DISCOUNT_FACTOR
         self.LEARNING_RATE = INITIAL_LEARNING_RATE
-        self.REGULARIZATION_COEFF = 0.009
+        self.REGULARIZATION_COEFF = 0.009e-8
 
         self.state_shape = observation_space.shape
         self.states = tf.placeholder(dtype=tf.float32,
@@ -64,12 +64,23 @@ class Model:
         self.train_step = self.optimizer.apply_gradients(zip(self.gradients_clipped, variables))
 
     def summary_function(self):
+        # Tensorboard plots
         tf.summary.scalar("Regularization_loss", self.regularization_loss)
         tf.summary.scalar("Simple_loss", self.mean_squared_loss)
         tf.summary.scalar("Total_loss", self.loss)
         tf.summary.image("Batch_pictures", self.states)
         tf.summary.image("Batch_pictures_processed", self.processed_states)
         # tf.summary.image("First_layer_picture", self.layer_maxp3) how to do this lol
+        for gradient in [x for x in self.gradients if x != None]:
+            # mean, variance = tf.nn.moments(gradient, [0])
+            # tf.summary.scalar("gradients/" + gradient.name + "/mean", mean)
+            # tf.summary.scalar("gradients/" + gradient.name + "/variance", variance)
+            tf.summary.histogram("gradients/" + gradient.name, gradient)
+        for gradient in [x for x in self.gradients_clipped if x != None]:
+            # mean, variance = tf.nn.moments(gradient, [0])
+            # tf.summary.scalar("gradients_clipped/" + gradient.name + "/mean", mean)
+            # tf.summary.scalar("gradients_clipped/" + gradient.name + "/variance", variance)
+            tf.summary.histogram("gradients_clipped/" + gradient.name, gradient)
         self.merged_summaries = tf.summary.merge_all()
 
     def update_learning_rate(self, multiplicative_factor):
