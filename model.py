@@ -4,7 +4,7 @@
 # Q(s,a; theta) means we have run the state through CNN and then have num_actions outputs that are the probabilities
 import tensorflow as tf  # look into using keras
 from helper.preprocess_helper import preprocess
-from helper.simple_rl_helper import get_num_actions
+from helper.simple_rl_helper import get_num_actions, compute_moments
 
 from helper.network_helper import apply_cnn_layer, apply_fc_layer, apply_maxpool_layer
 
@@ -74,14 +74,14 @@ class Model:
         tf.summary.image("Batch_pictures_processed", self.processed_states)
         # tf.summary.image("First_layer_picture", self.layer_maxp3) how to do this lol
         for gradient in [x for x in self.gradients if x != None]:
-            # mean, variance = tf.nn.moments(gradient, [0])
-            # tf.summary.scalar("gradients/" + gradient.name + "/mean", mean)
-            # tf.summary.scalar("gradients/" + gradient.name + "/variance", variance)
+            mean, variance = compute_moments(gradient)
+            tf.summary.scalar("gradients/" + gradient.name + "/mean", mean)
+            tf.summary.scalar("gradients/" + gradient.name + "/variance", variance)
             tf.summary.histogram("gradients/" + gradient.name, gradient)
         for gradient in [x for x in self.gradients_clipped if x != None]:
-            # mean, variance = tf.nn.moments(gradient, [0])
-            # tf.summary.scalar("gradients_clipped/" + gradient.name + "/mean", mean)
-            # tf.summary.scalar("gradients_clipped/" + gradient.name + "/variance", variance)
+            mean, variance = compute_moments(gradient)
+            tf.summary.scalar("gradients_clipped/" + gradient.name + "/mean", mean)
+            tf.summary.scalar("gradients_clipped/" + gradient.name + "/variance", variance)
             tf.summary.histogram("gradients_clipped/" + gradient.name, gradient)
         self.merged_summaries = tf.summary.merge_all()
 

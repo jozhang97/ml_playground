@@ -1,5 +1,6 @@
 import tensorflow as tf
 import math
+from simple_rl_helper import compute_moments
 fc_count = 0
 cnn_count = 0
 
@@ -49,8 +50,7 @@ def create_fc(input_size, output_size, stddev):
     fc_count += 1
 
     tf.summary.histogram("weight_fc/" + str(fc_count), W)
-    mean = tf.reduce_mean(W)
-    variance = tf.reduce_mean(tf.square(W - mean))
+    mean, variance = compute_moments(W)
     tf.summary.scalar("weight_fc/" + str(fc_count) + "/mean", mean)
     tf.summary.scalar("weight_fc/" + str(fc_count) + "/variance", variance)
     return W
@@ -61,8 +61,7 @@ def create_cnn(shape, stddev):
     cnn_count += 1
 
     tf.summary.histogram("weight_cnn/" + str(cnn_count), W)
-    mean = tf.reduce_mean(W)
-    variance = tf.reduce_mean(tf.square(W - mean))
+    mean, variance = compute_moments(W)
     tf.summary.scalar("weight_cnn/" + str(cnn_count) + "/mean", mean)
     tf.summary.scalar("weights_cnn/" + str(cnn_count) + "/variance", variance)
     return W

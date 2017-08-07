@@ -76,3 +76,9 @@ def remove_previous_logs():
     if os.path.exists("tensorboard_logs/test"):
         shutil.rmtree("tensorboard_logs/test")
         print("Removing old tensorboard_logs")
+
+
+def compute_moments(W):
+    mean = tf.reduce_mean(W)
+    variance = tf.reduce_mean(tf.square(W - mean))
+    return mean, variance
