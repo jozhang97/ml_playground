@@ -1,7 +1,7 @@
 import tensorflow as tf
 import math
-fc_count = 1
-cnn_count = 1
+fc_count = 0
+cnn_count = 0
 
 
 def add_weight_loss(W):
@@ -46,16 +46,22 @@ def apply_fc_layer(x, output_size, constant=0.0, stddev=0.1):
 def create_fc(input_size, output_size, stddev):
     W = tf.Variable(tf.truncated_normal([input_size, output_size], stddev))
     global fc_count
-    tf.summary.histogram("weight_fc/" + str(fc_count), W)
-    tf.summary.scalar("weight_fc/" + str(fc_count) + "/mean", tf.reduce_mean(W))
     fc_count += 1
-    return W
 
+    tf.summary.histogram("weight_fc/" + str(fc_count), W)
+    W_raveled = tf.reshape(W, [-1])
+    mean, variance = tf.nn.moments(W_raveled, [0])
+    print(mean.shape)
+    tf.summary.scalar("weight_fc/" + str(fc_count) + "/mean", mean)
+    tf.summary.scalar("weight_fc/" + str(fc_count) + "/variance", variance)
+    return W
 
 def create_cnn(shape, stddev):
     W = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
     global cnn_count
     tf.summary.histogram("weight_cnn/" + str(cnn_count), W)
-    tf.summary.scalar("weight_cnn/" + str(cnn_count) + "/mean", tf.reduce_mean(W))
+    mean, variance = tf.nn.moments(W, [0, 1, 2])
+    tf.summary.scalar("weight_cnn/" + str(cnn_count) + "/mean", mean)
+    tf.summary.scalar("weights_cnn/" + str(cnn_count) + "/variance", variance)
     cnn_count += 1
     return W
