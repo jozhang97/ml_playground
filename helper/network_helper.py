@@ -49,9 +49,8 @@ def create_fc(input_size, output_size, stddev):
     fc_count += 1
 
     tf.summary.histogram("weight_fc/" + str(fc_count), W)
-    W_raveled = tf.reshape(W, [-1])
-    mean, variance = tf.nn.moments(W_raveled, [0])
-    print(mean.shape)
+    mean = tf.reduce_mean(W)
+    variance = tf.reduce_mean(tf.square(W - mean))
     tf.summary.scalar("weight_fc/" + str(fc_count) + "/mean", mean)
     tf.summary.scalar("weight_fc/" + str(fc_count) + "/variance", variance)
     return W
@@ -59,9 +58,11 @@ def create_fc(input_size, output_size, stddev):
 def create_cnn(shape, stddev):
     W = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
     global cnn_count
+    cnn_count += 1
+
     tf.summary.histogram("weight_cnn/" + str(cnn_count), W)
-    mean, variance = tf.nn.moments(W, [0, 1, 2])
+    mean = tf.reduce_mean(W)
+    variance = tf.reduce_mean(tf.square(W - mean))
     tf.summary.scalar("weight_cnn/" + str(cnn_count) + "/mean", mean)
     tf.summary.scalar("weights_cnn/" + str(cnn_count) + "/variance", variance)
-    cnn_count += 1
     return W
