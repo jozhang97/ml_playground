@@ -66,6 +66,7 @@ class Model:
 
     def summary_function(self):
         # Tensorboard plots
+        tf.summary.scalar("Loss_ratio", self.mean_squared_loss/(self.regularization_loss*self.REGULARIZATION_COEFF))
         tf.summary.scalar("Regularization_loss", self.regularization_loss)
         tf.summary.scalar("Simple_loss", self.mean_squared_loss)
         tf.summary.scalar("Total_loss", self.loss)
