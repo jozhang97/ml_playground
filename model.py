@@ -66,13 +66,18 @@ class Model:
 
     def summary_function(self):
         # Tensorboard plots
+        # loss
         tf.summary.scalar("loss/Loss_ratio", self.mean_squared_loss/(self.regularization_loss*self.REGULARIZATION_COEFF))
         tf.summary.scalar("loss/Regularization_loss", self.regularization_loss)
         tf.summary.scalar("loss/Mean_squared_error", self.mean_squared_loss)
         tf.summary.scalar("loss/Total_loss", self.loss)
+
+        # images
         tf.summary.image("Batch_pictures", self.states)
         tf.summary.image("Batch_pictures_processed", self.processed_states)
         # tf.summary.image("First_layer_picture", self.layer_maxp3) how to do this lol
+
+        # gradients
         for gradient in [x for x in self.gradients if x != None]:
             mean, variance = compute_moments(gradient)
             tf.summary.scalar("gradients/" + gradient.name + "/mean", mean)
@@ -83,6 +88,14 @@ class Model:
             tf.summary.scalar("gradients_clipped/" + gradient.name + "/mean", mean)
             tf.summary.scalar("gradients_clipped/" + gradient.name + "/variance", variance)
             tf.summary.histogram("gradients_clipped/" + gradient.name, gradient)
+
+        # activation
+        tf.summary.histogram("activation/conv1", self.layer_conv1)
+        tf.summary.histogram("activation/conv2", self.layer_conv2)
+        tf.summary.histogram("activation/conv3", self.layer_conv3)
+        tf.summary.histogram("activation/fc1", self.layer_fc1)
+        tf.summary.histogram("activation/fc2", self.layer_fc2)
+
         self.merged_summaries = tf.summary.merge_all()
 
     def update_learning_rate(self, multiplicative_factor):
