@@ -66,10 +66,10 @@ class Model:
 
     def summary_function(self):
         # Tensorboard plots
-        tf.summary.scalar("Loss_ratio", self.mean_squared_loss/(self.regularization_loss*self.REGULARIZATION_COEFF))
-        tf.summary.scalar("Regularization_loss", self.regularization_loss)
-        tf.summary.scalar("Simple_loss", self.mean_squared_loss)
-        tf.summary.scalar("Total_loss", self.loss)
+        tf.summary.scalar("loss/Loss_ratio", self.mean_squared_loss/(self.regularization_loss*self.REGULARIZATION_COEFF))
+        tf.summary.scalar("loss/Regularization_loss", self.regularization_loss)
+        tf.summary.scalar("loss/Mean_squared_error", self.mean_squared_loss)
+        tf.summary.scalar("loss/Total_loss", self.loss)
         tf.summary.image("Batch_pictures", self.states)
         tf.summary.image("Batch_pictures_processed", self.processed_states)
         # tf.summary.image("First_layer_picture", self.layer_maxp3) how to do this lol

@@ -63,5 +63,5 @@ def create_cnn(shape, stddev):
     tf.summary.histogram("weight_cnn/" + str(cnn_count), W)
     mean, variance = compute_moments(W)
     tf.summary.scalar("weight_cnn/" + str(cnn_count) + "/mean", mean)
-    tf.summary.scalar("weights_cnn/" + str(cnn_count) + "/variance", variance)
+    tf.summary.scalar("weight_cnn/" + str(cnn_count) + "/variance", variance)
     return W
